@@ -1,0 +1,68 @@
+{% extends "bbase.html" %}
+
+{% block sidebar %}
+    <style type="text/css">
+        #sidebar { float: right; border: 1px dotted #ccc; padding: 4px; }
+        a { margin-left: 15px; }
+    </style>
+    <div id="sidebar">
+        Monthly Archive
+        <p>
+        {% for month in months %}
+            {% ifchanged month.0 %} {{ month.0 }} <br /> {% endifchanged %}
+            <a href="{% url posts.views.month month.0 month.1 %}">{{ month.2 }}</a> <br />
+        {% endfor %}
+        </p>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <style type="text/css">
+        .main { margin-left: 25px; margin-top: 30px; }
+        .time { font-size: 0.8em; margin-top: 2px; }
+        .body { font-size: 1.1em; margin-top: 2px; }
+        .commentlink { text-align: right; }
+        .step-links a { font-size: 0.89em; }
+        .title {
+            font-size: 1.4em; margin-top: 20px; border-bottom: 1px solid #ccc;
+            padding-left: 4px; margin-left: 5px;
+        }
+        .messages { margin-left: 20px; }
+        .pagination { margin-top: 20px; margin-left: -20px; }
+    </style>
+    <div class="main">
+
+        <!-- Posts  -->
+            {% for post in post_list %}
+                <div class="title">{{ post.title }}</div>
+                <ul>
+                    <div class="time">{{ post.created }}</div>
+                    <div class="body">{{ post.body|linebreaks }}</div>
+                    <div class="commentlink">
+                    <a href="{% url posts.views.post post.pk %}">Comments ({{ post.comment_set.count }})</a>
+                    </div>
+                </ul>
+            {% endfor %}
+
+        <!-- Next/Prev page links  -->
+        {% if not archive and posts.object_list and posts.paginator.num_pages > 1 %}
+        <div class="pagination">
+            <span class="step-links">
+                {% if posts.has_previous %}
+                    <a href= "?page={{ posts.previous_page_number }}">newer entries &lt;&lt; </a>
+                {% endif %}
+
+                <span class="current">
+                    &nbsp;Page {{ posts.number }} of {{ posts.paginator.num_pages }}
+                </span>
+
+                {% if posts.has_next %}
+                    <a href="?page={{ posts.next_page_number }}"> &gt;&gt; older entries</a>
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+
+    </div>
+
+{% endblock %}
